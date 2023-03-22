@@ -1,0 +1,286 @@
+#!/bin/bash
+#Funciones Profesor
+
+# Arrays ===============================================================================
+# usuario[1] profesor/alumno
+# usuario[2] nombre completo
+# usuario[3] usuario
+# usuario[4] clave
+# usuario[5] grupo (eso/pri/inf)
+# usuario[6] año 1/2/3/4/5/6
+# usuario[7] division a/b/ab
+
+# Funciones ============================================================================
+
+function licencia () {
+clear
+echo ""
+echo "     Copyright (c) 2008, 2009, 2010, FErArg"
+echo ""
+echo "     Este programa es software libre: usted puede redistribuirlo y / o modificarlo"
+echo "     bajo los términos de la GNU General Public License publicada por la"
+echo "     la Free Software Foundation, bien de la versión 3 de la Licencia, o de"
+echo "     la GPL2, o cualquier versión posterior."
+echo ""
+echo "     Este programa se distribuye con la esperanza de que sea útil,"
+echo "     pero SIN NINGUNA GARANTÍA, incluso sin la garantía implícita de"
+echo "     COMERCIABILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Véase el"
+echo "     GNU General Public License para más detalles."
+echo ""
+echo "     Usted debería haber recibido una copia de la Licencia Pública General de GNU"
+echo "     junto con este programa. Si no, visite <http://www.gnu.org/licenses/>."
+echo ""
+echo "     Puede descargar la version completa de la GPL3 desde < https://ferarg.com >"
+echo ""
+echo ""
+sleep 3
+            }
+
+
+function constantes () {
+    homeusu=/home/smb/${usuario[1]}/${usuario[3]}
+    homeusuenla=$homeusu/enlaces
+    homeusut=$homeusuenla/${usuario[5]}/${usuario[6]}/${usuario[7]}
+    enlaces=/home/smb/enlaces/${usuario[5]}/${usuario[6]}/${usuario[7]}
+    server="Servidor1"
+            }
+
+
+function creausuario() {
+    groupadd ${usuario[1]}
+    mkdir -p $homeusu/personal
+    useradd -g ${usuario[1]} -s /bin/bash -d $homeusu ${usuario[3]}
+    echo ${usuario[3]}:${usuario[4]} | chpasswd
+    chmod -R 755 $homeusu
+    chmod 711 $homeusu
+    chown -R ${usuario[3]}:${usuario[1]} $homeusu
+    groupadd ${usuario[5]}
+    gpasswd -a ${usuario[3]} ${usuario[5]}
+    echo -e ${usuario[4]}\\n${usuario[4]}\\n | smbpasswd -as ${usuario[3]}
+    sleep 0.2
+            }
+
+
+function scriptlogon () {
+    mkdir -p $homeusu/netlogon/
+    touch $homeusu/netlogon/logon.bat
+    echo "net time \\\\$server /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use H: \\\\$server\\personal /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use Z: \\\\$server\\public\\$dep1 /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use Y: \\\\$server\\public\\zona.comun /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use X: \\\\$server\\public\\jc /yes" >> $homeusu/netlogon/logon.bat
+            }
+
+
+function scriptlogoff () {
+    mkdir -p $homeusu/netlogon/
+    touch $homeusu/netlogon/logoff.bat
+    echo "net use * /DELETE /yes " >> $homeusu/netlogon/logoff.bat
+    echo "%SystemRoot%\\System32\\delprof.exe /Q /R /I" >> $homeusu/netlogon/logoff.bat
+            }
+
+
+function creaenlaces () {
+    mkdir -p $homeusut/trabajos_profesor
+    mkdir -p $enlaces/trabajos_alumnos
+    mkdir -p $enlaces/trabajos_profesor
+    sleep 0.2
+    ln -s $homeusut/trabajos_profesor -T $enlaces/trabajos_profesor/${usuario[3]}
+    ln -s $enlaces/trabajos_alumnos -t $homeusut/
+    sleep 0.2
+            }
+
+
+function directorios () {
+    mkdir -p $homeusuesc/Directorios
+    ln -s /home/smb/directorios/avisos -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/boletines -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/calidad -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/departamento_pastoral -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/documentos_internos -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/legislacion -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/otros_recursos -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/programaciones -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/programas_educativos -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/u_didacticas -t $homeusuesc/Directorios/
+    ln -s /home/smb/directorios/varios -t $homeusuesc/Directorios/
+            }
+
+function asignaturas () {
+    echo ""
+    echo "------------------------------------------------------------------------------------"
+    echo ""
+    echo " Asignaturas Primaria"
+    echo "[1] Lengua		[2] Matemáticas			[3] Conocimiento del Medio"
+    echo "[4] Inglés		[5] Valenciano			[6] Educación Artística"
+    echo "[7] Educación Física	[8] Religión"
+    echo ""
+    echo "------------------------------------------------------------------------------------"
+    echo ""
+    echo "Asignaturas E.S.O."
+    echo "[10] Lengua			[11] Valenciano		[12] Inglés"
+    echo "[13] Francés			[14] Latín		[15] Matemáticas"
+    echo "[16] Matemáticas-b		[17] Ciencias Naturales	[18] Física y Química"
+    echo "[19] Biología y Geología	[20] Ciencias Sociales	[21] Trabajo de Investigación"
+    echo "[22] Religión			[23] Tecnología		[24] Informática"
+    echo "[25] Educación Física		[26] Música		[27] Tutoría"
+    echo "[28] Ética 			[29] Educacion para la Ciudadanía"
+    echo "[30] Educación Plástica y Visual"
+    echo ""
+    echo "[X] USUARIO INFANTIL o SALIR"
+    echo ""
+    echo "------------------------------------------------------------------------------------"
+    echo ""
+    read -p "Ingrese una opción: " leer
+    case $leer in
+        1) asignatura[I]="lengua";;
+        2) asignatura[I]="matematicas";;
+        3) asignatura[I]="c_medio";;
+        4) asignatura[I]="ingles";;
+        5) asignatura[I]="valenciano";;
+        6) asignatura[I]="e_artistica";;
+        7) asignatura[I]="e_fisica";;
+        8) asignatura[I]="religion";;
+        10) asignatura[I]="lengua";;
+        11) asignatura[I]="valenciano";;
+        12) asignatura[I]="ingles";;
+        13) asignatura[I]="frances";;
+        14) asignatura[I]="latin";;
+        15) asignatura[I]="matematicas";;
+        16) asignatura[I]="matematicas-b";;
+        17) asignatura[I]="naturales";;
+        18) asignatura[I]="fisica_quimica";;
+        19) asignatura[I]="biologia_geologia";;
+        20) asignatura[I]="sociales";;
+        21) asignatura[I]="t_investigacion";;
+        22) asignatura[I]="religion";;
+        23) asignatura[I]="tecnologia";;
+        24) asignatura[I]="informatica";;
+        25) asignatura[I]="e_fisica";;
+        26) asignatura[I]="musica";;
+        27) asignatura[I]="tutoria";;
+        28) asignatura[I]="etica";;
+        29) asignatura[I]="e_ciudadania";;
+        30) asignatura[I]="e_plastica_visual";;
+    x) unset leer
+    leer="X" ;;
+    X) ;;
+    esac
+            }
+
+
+function creadirasignaturas () {	# Crea Directorios Asignaturas
+echo "CreaAsignaturas"
+    for ((a = 1;  a <= $nroasig ; a++))
+    do
+    echo "Seleccion ${asignatura[a]}"
+    mkdir -p $homeusut/trabajos_profesor/${asignatura[a]}
+    done
+    chown -R ${usuario[3]}:${usuario[1]} $homeusu
+    chmod 755 -R $homeusu
+    chmod 711 $homeusu
+                }
+
+
+function cambiopermisos () {
+    chown ${usuario[3]}:${usuario[1]} -R $homeusu
+    sleep 0.2
+            }
+
+
+function cambiopermisosD () {
+    chown ${usuarioD[3]}:${usuarioD[1]} -R $homeusuD
+    sleep 0.2
+            }
+
+
+function eliminausuario () {
+    rm -Rf $enlaces/trabajos_profesor/${usuario[3]}
+    gpasswd -d ${usuario[3]} ${usuario[1]}
+    gpasswd -d ${usuario[3]} ${usuario[5]}
+    gpasswd -d ${usuario[3]} ${usuario[6]}
+    gpasswd -d ${usuario[3]} ${usuario[7]}
+    sleep 0.2
+                }
+
+
+# Profesores A-B --------------------------------------------------
+
+function constantesab () {
+    homeusu=/home/smb/${usuario[1]}/${usuario[3]}
+    homeusuenla=$homeusu/enlaces
+    homeusutA=$homeusuenla/${usuario[5]}/${usuario[6]}/${usuario[7]}/a
+    homeusutB=$homeusuenla/${usuario[5]}/${usuario[6]}/${usuario[7]}/b
+    enlacesA=/home/smb/enlaces/${usuario[5]}/${usuario[6]}/${usuario[7]}/a
+    enlacesB=/home/smb/enlaces/${usuario[5]}/${usuario[6]}/${usuario[7]}/b
+    server="Servidor1"
+            }
+
+
+function creaenlacesab () {
+echo "CreaEnlacesAB"
+    mkdir -p $homeusutA/trabajos_profesor
+    mkdir -p $enlacesA/trabajos_alumnos
+    mkdir -p $enlacesA/trabajos_profesor
+    mkdir -p $homeusutB/trabajos_profesor
+    mkdir -p $enlacesB/trabajos_alumnos
+    mkdir -p $enlacesB/trabajos_profesor
+    sleep 0.2
+    ln -s $homeusutA/trabajos_profesor -T $enlacesA/trabajos_profesor/${usuario[3]}
+    ln -s $homeusutB/trabajos_profesor -T $enlacesB/trabajos_profesor/${usuario[3]}
+    sleep 0.2
+    ln -s $enlaces/trabajos_alumnos -t $homeusutA/
+    ln -s $enlaces/trabajos_alumnos -t $homeusutB/
+    sleep 0.2
+            }
+
+
+
+function creadirasignaturasab () {	# Crea Directorios Asignaturas
+echo "CreaAsignaturasAB"
+    for ((a = 1;  a <= $nroasig ; a++))
+    do
+    echo "Seleccion ${asignatura[a]}"
+    mkdir -p $homeusutA/trabajos_profesor/${asignatura[a]}
+    mkdir -p $homeusutB/trabajos_profesor/${asignatura[a]}
+    done
+    chown -R ${usuario[3]}:${usuario[1]} $homeusu
+    chmod 755 -R $homeusu
+    chmod 711 $homeusu
+    sleep 0.2
+                }
+
+
+function eliminausuarioab () {
+    enlaces=/home/smb/enlaces/${usuario[5]}/${usuario[6]}/
+    rm -Rf $enlaces/a/trabajos_profesor/${usuario[3]}
+    rm -Rf $enlaces/b/trabajos_profesor/${usuario[3]}
+    gpasswd -d ${usuario[3]} ${usuario[1]}
+    gpasswd -d ${usuario[3]} ${usuario[5]}
+    gpasswd -d ${usuario[3]} ${usuario[6]}
+    gpasswd -d ${usuario[3]} ${usuario[7]}
+    sleep 0.2
+                }
+
+# Fin Profesor AB ---------------------------------------------------------------------
+
+
+function eleccioncorrecta () {
+    # Seguir o Salir
+    echo " Controle la Información que aparece en la cabecera de la pantalla "
+    echo ""
+    echo " Es Esta Información Correcta?"
+    echo ""
+    echo "[1] Es Correcta, Continuar"
+    echo "[0] No es Correcta, Salir"
+    read -p "Ingrese una opción: " leer
+    case $leer in
+            1)
+        	echo "Información Correcta"
+            unset leer
+        	;;
+           	0)
+            exit 0
+        	;;
+    esac
+            }

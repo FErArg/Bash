@@ -1,0 +1,179 @@
+#!/bin/bash
+#Funciones Alumnos
+
+# Arrays ===============================================================================
+# usuario[1] profesor/alumno
+# usuario[2] nombre completo
+# usuario[3] usuario
+# usuario[4] clave
+# usuario[5] grupo (eso/pri/inf)
+# usuario[6] año 1/2/3/4/5/6
+# usuario[7] division a/b/ab
+
+# Funciones ============================================================================
+
+function licencia () {
+clear
+echo ""
+echo "     Copyright (c) 2008, 2009, 2010, FErArg"
+echo ""
+echo "     Este programa es software libre: usted puede redistribuirlo y / o modificarlo"
+echo "     bajo los términos de la GNU General Public License publicada por la"
+echo "     la Free Software Foundation, bien de la versión 3 de la Licencia, o de"
+echo "     la GPL2, o cualquier versión posterior."
+echo ""
+echo "     Este programa se distribuye con la esperanza de que sea útil,"
+echo "     pero SIN NINGUNA GARANTÍA, incluso sin la garantía implícita de"
+echo "     COMERCIABILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Véase el"
+echo "     GNU General Public License para más detalles."
+echo ""
+echo "     Usted debería haber recibido una copia de la Licencia Pública General de GNU"
+echo "     junto con este programa. Si no, visite <http://www.gnu.org/licenses/>."
+echo ""
+echo "     Puede descargar la version completa de la GPL3 desde < https://ferarg.com >"
+echo ""
+echo ""
+sleep 3
+            }
+
+function constantes () {
+    homeusu=/home/smb/${usuario[1]}/${usuario[5]}/${usuario[6]}/${usuario[7]}/${usuario[3]}
+    homeusuenla=$homeusu/enlaces
+    homeusut=$homeusuenla/${usuario[5]}/${usuario[6]}/${usuario[7]}
+    enlaces=/home/smb/enlaces/${usuario[5]}/${usuario[6]}/${usuario[7]}
+    server="Servidor1"
+            }
+
+
+function creausuario() {
+    groupadd ${usuario[1]}
+    mkdir -p $homeusu
+    useradd -g ${usuario[1]} -s /bin/bash -d $homeusu ${usuario[3]}
+    echo ${usuario[3]}:${usuario[4]} | chpasswd
+    chmod -R 755 $homeusu
+    chmod 711 $homeusu
+    chown -R ${usuario[3]}:${usuario[1]} $homeusu
+    groupadd ${usuario[5]}
+    gpasswd -a ${usuario[3]} ${usuario[5]}
+    echo -e ${usuario[4]}\\n${usuario[4]}\\n | smbpasswd -as ${usuario[3]}
+    sleep 0.2
+            }
+
+
+function scriptlogon () {
+    mkdir -p $homeusu/netlogon/
+    touch $homeusu/netlogon/logon.bat
+    echo "net time \\\\$server /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use H: \\\\$server\\personal /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use Z: \\\\$server\\public\\$dep1 /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use Y: \\\\$server\\public\\zona.comun /yes" >> $homeusu/netlogon/logon.bat
+    echo "net use X: \\\\$server\\public\\jc /yes" >> $homeusu/netlogon/logon.bat
+            }
+
+
+function scriptlogoff () {
+    mkdir -p $homeusu/netlogon/
+    touch $homeusu/netlogon/logoff.bat
+    echo "net use * /DELETE /yes " >> $homeusu/netlogon/logoff.bat
+    echo "%SystemRoot%\\System32\\delprof.exe /Q /R /I" >> $homeusu/netlogon/logoff.bat
+            }
+
+
+function creaenlaces () {
+    mkdir -p $homeusut/trabajos_alumnos
+    mkdir -p $enlaces/trabajos_alumnos
+    mkdir -p $enlaces/trabajos_profesor
+    sleep 0.2
+    ln -s $homeusut/trabajos_alumnos -T $enlaces/trabajos_alumnos/${usuario[3]}
+    ln -s $enlaces/trabajos_profesor -t $homeusut/
+    sleep 0.2
+            }
+
+
+function  cambiopermisos () {
+    chown ${usuario[3]}:${usuario[1]} -R $homeusu
+    sleep 0.2
+            }
+
+
+function gruposlinux () {
+    gpasswd -d ${usuario[3]} ${usuario[5]}
+    gpasswd -d ${usuario[3]} ${usuario[6]}
+    gpasswd -d ${usuario[3]} ${usuario[7]}
+    gpasswd -a ${usuarioD[3]} ${usuarioD[5]}
+    gpasswd -a ${usuarioD[3]} ${usuarioD[6]}
+    gpasswd -a ${usuarioD[3]} ${usuarioD[7]}
+    sleep 0.2
+            }
+
+
+function eliminaenlacesantiguos () {
+    rm $homeusu/trabajos_profesor
+    rm $homeusu/Desktop
+    mv $homeusu/trabajos_alumno $homeusuenla/
+    sleep 0.2
+                }
+# Destino -----------------------------------------------------------------------------------------------------
+
+function constantesD () {
+    homeusD="/home/smb/${usuarioD[1]}/${usuarioD[5]}/${usuarioD[6]}/${usuarioD[7]}"
+    homeusuD="$homeusD/${usuarioD[3]}"
+    homeusuenlaD="$homeusuD/enlaces"
+    homeusutD="$homeusuenlaD/${usuarioD[5]}/${usuarioD[6]}/${usuarioD[7]}"
+    enlacesD="/home/smb/enlaces/${usuarioD[5]}/${usuarioD[6]}/${usuarioD[7]}"
+             }
+
+
+function  cambiopermisosD () {
+    chown ${usuarioD[3]}:${usuarioD[1]} -R $homeusuD
+    sleep 0.2
+            }
+
+
+function mueveusuario () {
+    mkdir -p $homeusD
+    sleep 0.2
+    mv $homeusu $homeusD/
+    usermod -d $homeusuD ${usuario[3]}
+    sleep 0.2
+            }
+
+
+function creaenlacesD () {
+    rm $homeusuD/Desktop
+    mkdir -p $homeusutD/trabajos_alumnos
+    mkdir -p $enlacesD/trabajos_alumnos
+    mkdir -p $enlacesD/trabajos_profesor
+    mkdir -p $enlacesD/trabajos_alumnos
+    mkdir -p $enlacesD/trabajos_profesor
+    sleep 0.2
+            }
+
+
+function directoriosD () {
+    mkdir -p $homeusuescD/Directorios
+    sleep 0.2
+    ln -s /home/nis/directorios/programas_educativos -t $homeusuescD/Directorios/
+    sleep 0.2
+            }
+
+
+function eleccioncorrecta () {
+    # Seguir o Salir
+    echo " Controle la Información que aparece en la cabecera de la pantalla "
+    echo ""
+    echo " Es Esta Información Correcta?"
+    echo ""
+    echo "[1] Es Correcta, Continuar"
+    echo "[0] No es Correcta, Salir"
+    read -p "Ingrese una opción: " leer
+    case $leer in
+            1)
+        	echo "Información Correcta"
+            unset leer
+        	;;
+           	0)
+            exit 0
+        	;;
+    esac
+            }

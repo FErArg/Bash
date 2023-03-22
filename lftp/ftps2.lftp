@@ -1,0 +1,7 @@
+open -u prueba1,Prueba1234 ferarg.mine.nu:21
+set ssl:verify-certificate no;
+set ftp:ssl-protect-data yes;
+set ftp:ssl-protect-list yes:
+ls
+
+exit

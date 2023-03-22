@@ -1,0 +1,25 @@
+# chuQAk8hu5rePrU
+
+# lftp -u user:password dominio.com:21
+
+open -u usuario,password ominio.com:21
+
+# no comprueba certificados self-signed
+set ssl:verify-certificate no;
+
+# protege datos y listas
+set ftp:ssl-protect-data yes;
+set ftp:ssl-protect-list yes;
+
+# descarga datos y los sync con local (destino -> local)
+#mirror --reverse --verbose --delete --only-newer / /home/ferarg/00/
+
+# el modo reverse, hay que intercambiar origen destino (local -> remoto )
+# y eso hace que "suba" los datos
+mirror --reverse --verbose --delete --only-newer /home/ferarg/00/. /
+
+# Con ejemplo de exclude global
+#mirror --reverse --verbose --delete --only-newer --exclude-glob *.sh /home/ferarg/00/. /
+
+
+exit
