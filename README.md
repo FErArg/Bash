@@ -1,1 +1,1 @@
-# sccm
+# Bash scripts
