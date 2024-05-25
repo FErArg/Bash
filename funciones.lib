@@ -1,0 +1,52 @@
+#!/bin/bash
+# Funciones utilizadas en Scripts
+
+#. /root/scripts/./funciones.lib
+#. /root/scripts/./claves.lib
+
+email1=""
+email2=""
+email3=""
+
+hostname="$(hostname)"
+fecha="$(date +%F)"
+fecha2="$(date +%Y%m%d-%H%M)"
+hora="$(date +%H.%M)"
+mes="$(date +%G-%B)"
+
+twitter() {
+        perl /root/git/oysttyer/oysttyer.pl -status="$hostname - $msn - $fecha"
+        }
+
+xmpp(){
+      usuario="USERNAME"
+      clave="PASSWORD"
+      server="SERVER"
+      destinatario="DESTINY"
+      echo "$fecha - $msn" | sendxmpp -v -e -u $usuario -p $clave -j $server $destinatario@$server
+      }
+
+# envio mensajes telegram
+telegram() {
+        /root/scripts/varios/./telegram.sh -t TELEGRAM:API -c ID_DESTINY -C "$1"
+        }
+alias telegram=telegram
+
+alarma1() {
+                beep -f 500.7 -r 1 -d 200 -l 400
+        }
+
+alarma2() {
+        for i in $(seq 1 2 20)
+         do
+                beep -f 300.7 -r 2 -d 100 -l 400
+        done
+        }
+
+alarma3() {
+                beep -f 800.7 -r 3 -d 10 -l 100
+        }
+
+alarma4() {
+                beep -f 3000.7 -r 1 -d 10 -l 100
+        }
